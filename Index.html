@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VR + Día/Noche + Movimiento</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+</head>
+
+<body>
+  <a-scene 
+    background="color: #87CEEB"
+    shadow="type: pcfsoft"
+    vr-mode-ui="enabled: true"
+    renderer="antialias: true"
+    webxr="optionalFeatures: local-floor">
+
+    <!-- ☀️ SOL -->
+    <a-light 
+      id="sun"
+      type="directional"
+      position="0 10 0"
+      intensity="1"
+      cast-shadow="true">
+    </a-light>
+
+    <a-light type="ambient" intensity="0.3"></a-light>
+
+    <!-- 🌍 SUELO -->
+    <a-plane 
+      rotation="-90 0 0"
+      width="200"
+      height="200"
+      color="#7BC8A4">
+    </a-plane>
+
+    <!-- 🏛 MODELO -->
+    <a-entity
+      gltf-model="monumento.glb"
+      position="0 0 -5"
+      scale="200 200 200">
+    </a-entity>
+
+    <!-- 🎮 RIG -->
+    <a-entity id="playerRig" position="0 0 0">
+
+      <!-- Cámara VR -->
+      <a-camera 
+        position="0 1.6 0"
+        look-controls="pointerLockEnabled: true"
+        wasd-controls="enabled: false">
+      </a-camera>
+
+      <!-- 🟥 Personaje -->
+      <a-box 
+        position="0 1 0"
+        depth="1"
+        height="2"
+        width="1"
+        color="red">
+      </a-box>
+
+    </a-entity>
+
+  </a-scene>
+
+<script>
+const sun = document.querySelector('#sun');
+const scene = document.querySelector('a-scene');
+const playerRig = document.querySelector('#playerRig');
+
+let time = 0;
+
+function animateSun() {
+  time += 0.002;
+
+  const x = Math.cos(time) * 20;
+  const y = Math.sin(time) * 20;
+
+  sun.setAttribute('position', { x: x, y: y, z: -10 });
+
+  const intensity = Math.max(0, Math.sin(time));
+  sun.setAttribute('intensity', intensity);
+
+  if (intensity > 0.6) {
+    scene.setAttribute('background', 'color: #87CEEB');
+  } 
+  else if (intensity > 0.2) {
+    scene.setAttribute('background', 'color: #FF8C42');
+  } 
+  else {
+    scene.setAttribute('background', 'color: #0B0C2A');
+  }
+
+  requestAnimationFrame(animateSun);
+}
+
+animateSun();
+
+// Movimiento PC
+const keys = {};
+const speed = 0.2;
+
+document.addEventListener('keydown', e => keys[e.key] = true);
+document.addEventListener('keyup', e => keys[e.key] = false);
+
+function movePlayer() {
+  let position = playerRig.getAttribute('position');
+
+  if (keys['w'] || keys['ArrowUp']) position.z -= speed;
+  if (keys['s'] || keys['ArrowDown']) position.z += speed;
+  if (keys['a'] || keys['ArrowLeft']) position.x -= speed;
+  if (keys['d'] || keys['ArrowRight']) position.x += speed;
+
+  position.x = Math.max(-95, Math.min(95, position.x));
+  position.z = Math.max(-95, Math.min(95, position.z));
+
+  playerRig.setAttribute('position', position);
+
+  requestAnimationFrame(movePlayer);
+}
+
+movePlayer();
+</script>
+
+</body>
+</html>
