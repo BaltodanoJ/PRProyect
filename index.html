@@ -12,7 +12,7 @@
     shadow="type: pcfsoft"
     vr-mode-ui="enabled: true"
     renderer="antialias: true"
-    webxr="optionalFeatures: local-floor">
+    webxr="referenceSpaceType: viewer">
 
     <!-- ☀️ SOL -->
     <a-light 
@@ -41,7 +41,7 @@
     </a-entity>
 
     <!-- 🎮 RIG -->
-    <a-entity id="playerRig" position="0 0 0">
+    <a-entity id="playerRig" position="0 3 15">
 
       <!-- Cámara VR -->
       <a-camera 
@@ -124,6 +124,7 @@ movePlayer();
 
 </body>
 </html>
+
 
 
 
